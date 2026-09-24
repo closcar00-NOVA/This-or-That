@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Decision Ball</title>
+    <style>
+        /* Base Reset & Typography */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: #fff;
+            background-color: #050505;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #1a0b2e 0%, #050505 100%);
+        }
+
+        .bg-custom-asset {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .ui-container {
+            text-align: center;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 500px;
+            padding: 0 20px;
+        }
+
+        /* Neon App Header */
+        .app-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: #d8b4fe;
+            text-shadow: 0 0 10px rgba(216, 180, 254, 0.6), 0 0 20px rgba(168, 85, 247, 0.4);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Input Fields for "This or That" */
+        .inputs-container {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="text"] {
+            width: 45%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #3b0764;
+            background-color: #110524;
+            color: #fff;
+            font-size: 1rem;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]::placeholder {
+            color: #6b21a8;
+        }
+
+        input[type="text"]:focus {
+            border-color: #a855f7;
+        }
+
+        .status-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+            min-height: 1.5rem;
+            color: #e9d5ff;
+        }
+
+        /* 8-Ball Styling */
+        .magic-8-ball {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer; 
+            background: radial-gradient(circle at 35% 25%, #333 0%, #000 60%);
+            box-shadow: 
+                inset -25px -25px 50px rgba(0,0,0,0.9), 
+                inset 10px 10px 30px rgba(255,255,255,0.1), 
+                0 20px 40px rgba(0,0,0,0.9),
+                0 0 30px rgba(168, 85, 247, 0.2); /* Subtle purple glow */
+            margin: 1rem 0;
+            transition: transform 0.1s;
+        }
+
+        .magic-8-ball:active {
+            transform: scale(0.98);
+        }
+
+        .blue-triangle-window {
+            width: 130px;
+            height: 130px;
+            background-color: #0f0518;
+            border-radius: 50%;
+            border: 4px solid #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0px 15px 25px rgba(0,0,0,1);
+        }
+
+        .blue-triangle-window::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 55px solid transparent;
+            border-right: 55px solid transparent;
+            border-top: 95px solid #4c1d95; /* Deep purple liquid */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            filter: drop-shadow(0px 8px 6px rgba(0,0,0,0.8));
+        }
+
+        .answer-text {
+            position: relative;
+            z-index: 2;
+            color: #f3e8ff;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 700;
+            line-height: 1.2;
+            text-transform: uppercase;
+            padding: 10px;
+            text-shadow: 0px 2px 4px rgba(0,0,0,0.9);
+            opacity: 0; 
+            transition: opacity 1s ease-in; 
+        }
+
+        /* Shake Button */
+        .shake-btn {
+            background-color: #9333ea;
+            color: #fff;
+            border: none;
+            padding: 14px 32px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 15px rgba(147, 51, 234, 0.3);
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .shake-btn:hover {
+            background-color: #a855f7;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(168, 85, 247, 0.5);
+        }
+
+        .shake-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 10px rgba(147, 51, 234, 0.3);
+        }
+
+        .shake-btn:disabled {
+            background-color: #333;
+            color: #777;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(2px, 2px) rotate(0deg); }
+            10% { transform: translate(-2px, -4px) rotate(-2deg); }
+            20% { transform: translate(-5px, 0px) rotate(2deg); }
+            30% { transform: translate(5px, 4px) rotate(0deg); }
+            40% { transform: translate(2px, -2px) rotate(2deg); }
+            50% { transform: translate(-2px, 4px) rotate(-2deg); }
+            60% { transform: translate(-5px, 2px) rotate(0deg); }
+            70% { transform: translate(5px, 2px) rotate(-2deg); }
+            80% { transform: translate(-2px, -2px) rotate(2deg); }
+            90% { transform: translate(2px, 4px) rotate(0deg); }
+            100% { transform: translate(2px, -4px) rotate(-2deg); }
+        }
+
+        .shake-active {
+            animation: shake 0.4s;
+            animation-iteration-count: 3; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-custom-asset"></div>
+
+    <div class="ui-container">
+        <h1 class="app-title">This or That</h1>
+        
+        <div class="inputs-container">
+            <input type="text" id="option1" placeholder="Option 1">
+            <input type="text" id="option2" placeholder="Option 2">
+        </div>
+
+        <div id="status" class="status-text">Enter two choices and tap the ball...</div>
+        
+        <div id="magicBall" class="magic-8-ball" title="Tap to decide!">
+            <div class="blue-triangle-window">
+                <div id="answerDisplay" class="answer-text" style="font-size: 2.5rem; opacity: 1;">?</div>
+            </div>
+        </div>
+
+        <button id="shakeBtn" class="shake-btn">Decide</button>
+    </div>
+
+    <script>
+        const genericAnswers = [
+            "Go with the first option",
+            "Choose the second option",
+            "The former is the way",
+            "The latter is your best bet",
+            "Definitely the first",
+            "Absolutely the second"
+        ];
+
+        const ball = document.getElementById('magicBall');
+        const answerDisplay = document.getElementById('answerDisplay');
+        const statusText = document.getElementById('status');
+        const shakeBtn = document.getElementById('shakeBtn');
+        const opt1Input = document.getElementById('option1');
+        const opt2Input = document.getElementById('option2');
+        
+        let isAnimating = false;
+
+        function triggerShake() {
+            if (isAnimating) return;
+            isAnimating = true;
+            shakeBtn.disabled = true;
+            
+            answerDisplay.style.opacity = 0;
+            ball.classList.add('shake-active');
+            statusText.textContent = "Flipping the coin...";
+
+            setTimeout(() => {
+                ball.classList.remove('shake-active');
+                
+                const val1 = opt1Input.value.trim();
+                const val2 = opt2Input.value.trim();
+                
+                let finalAnswer = "";
+
+                // If both inputs are filled, randomly select one of the user's inputs
+                if (val1 && val2) {
+                    finalAnswer = Math.random() < 0.5 ? val1 : val2;
+                } 
+                // Otherwise, fall back to the generic binary phrases
+                else {
+                    const randomIndex = Math.floor(Math.random() * genericAnswers.length);
+                    finalAnswer = genericAnswers[randomIndex];
+                }
+                
+                answerDisplay.textContent = finalAnswer;
+                
+                // Adjust font size dynamically if the user types a very long word
+                if (finalAnswer.length > 15) {
+                    answerDisplay.style.fontSize = "0.75rem";
+                } else if (finalAnswer.length > 10) {
+                    answerDisplay.style.fontSize = "0.9rem";
+                } else {
+                    answerDisplay.style.fontSize = "1.1rem";
+                }
+                
+                answerDisplay.style.opacity = 1;
+                statusText.textContent = "The decision is made. Ready for another?";
+                
+                shakeBtn.disabled = false;
+                isAnimating = false;
+            }, 1200); 
+        }
+
+        shakeBtn.addEventListener('click', triggerShake);
+        ball.addEventListener('click', triggerShake);
+    </script>
+</body>
+</html>
