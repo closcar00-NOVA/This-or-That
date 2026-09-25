@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coin Flip Ball</title>
+    <title>3D Coin Flip</title>
     <style>
         /* Base Reset & Typography */
         * {
@@ -42,7 +42,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 1.5rem;
+            gap: 2rem;
             width: 100%;
             max-width: 500px;
             padding: 0 20px;
@@ -68,77 +68,61 @@
             line-height: 1.4;
         }
 
-        /* 8-Ball Styling */
-        .magic-8-ball {
-            position: relative;
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer; 
-            background: radial-gradient(circle at 35% 25%, #333 0%, #000 60%);
-            box-shadow: 
-                inset -25px -25px 50px rgba(0,0,0,0.9), 
-                inset 10px 10px 30px rgba(255,255,255,0.1), 
-                0 20px 40px rgba(0,0,0,0.9),
-                0 0 30px rgba(168, 85, 247, 0.2); 
+        /* 
+         * 3D COIN STYLING 
+         * Uses perspective to create a realistic 3D space for the flip
+         */
+        .coin-container {
+            perspective: 1000px;
             margin: 1rem 0;
-            transition: transform 0.1s;
         }
 
-        .magic-8-ball:active {
-            transform: scale(0.98);
+        .coin {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 2s cubic-bezier(0.175, 0.885, 0.32, 1.1); /* Adds a slight bounce at the end */
         }
 
-        .blue-triangle-window {
-            width: 130px;
-            height: 130px;
-            background-color: #0f0518;
+        /* Shared styles for both faces */
+        .coin-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
-            border: 4px solid #111;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
-            overflow: hidden;
-            box-shadow: inset 0px 15px 25px rgba(0,0,0,1);
-        }
-
-        .blue-triangle-window::before {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 0;
-            border-left: 55px solid transparent;
-            border-right: 55px solid transparent;
-            border-top: 95px solid #4c1d95; 
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1;
-            filter: drop-shadow(0px 8px 6px rgba(0,0,0,0.8));
-        }
-
-        .answer-text {
-            position: relative;
-            z-index: 2;
-            color: #f3e8ff;
-            text-align: center;
-            font-size: 1.8rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            line-height: 1.2;
+            font-size: 2.5rem;
+            font-weight: 900;
             text-transform: uppercase;
-            padding: 10px;
-            text-shadow: 0px 2px 4px rgba(0,0,0,0.9);
-            opacity: 0; 
-            transition: opacity 1s ease-in; 
+            letter-spacing: 2px;
+            backface-visibility: hidden; /* Hides the back of the element when it's rotated away */
+            box-shadow: 
+                inset 0 0 20px rgba(0,0,0,0.5), 
+                0 15px 35px rgba(0,0,0,0.6);
+            border: 8px solid #b8860b;
         }
 
-        /* Shake Button */
-        .shake-btn {
+        /* Heads Face */
+        .coin-front {
+            background: radial-gradient(circle at 30% 30%, #ffd700 0%, #b8860b 100%);
+            color: #4a3600;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.4);
+        }
+
+        /* Tails Face */
+        .coin-back {
+            background: radial-gradient(circle at 30% 30%, #e5c100 0%, #996515 100%);
+            color: #332500;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.4);
+            transform: rotateY(180deg); /* Pre-rotated to face backwards */
+        }
+
+        /* Flip Button */
+        .flip-btn {
             background-color: #9333ea;
             color: #fff;
             border: none;
@@ -153,42 +137,23 @@
             letter-spacing: 1px;
         }
 
-        .shake-btn:hover {
+        .flip-btn:hover {
             background-color: #a855f7;
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(168, 85, 247, 0.5);
         }
 
-        .shake-btn:active {
+        .flip-btn:active {
             transform: translateY(2px);
             box-shadow: 0 2px 10px rgba(147, 51, 234, 0.3);
         }
 
-        .shake-btn:disabled {
+        .flip-btn:disabled {
             background-color: #333;
             color: #777;
             box-shadow: none;
             cursor: not-allowed;
             transform: none;
-        }
-
-        @keyframes shake {
-            0% { transform: translate(2px, 2px) rotate(0deg); }
-            10% { transform: translate(-2px, -4px) rotate(-2deg); }
-            20% { transform: translate(-5px, 0px) rotate(2deg); }
-            30% { transform: translate(5px, 4px) rotate(0deg); }
-            40% { transform: translate(2px, -2px) rotate(2deg); }
-            50% { transform: translate(-2px, 4px) rotate(-2deg); }
-            60% { transform: translate(-5px, 2px) rotate(0deg); }
-            70% { transform: translate(5px, 2px) rotate(-2deg); }
-            80% { transform: translate(-2px, -2px) rotate(2deg); }
-            90% { transform: translate(2px, 4px) rotate(0deg); }
-            100% { transform: translate(2px, -4px) rotate(-2deg); }
-        }
-
-        .shake-active {
-            animation: shake 0.4s;
-            animation-iteration-count: 3; 
         }
     </style>
 </head>
@@ -199,56 +164,61 @@
     <div class="ui-container">
         <h1 class="app-title">The Decider</h1>
         
-        <div id="status" class="status-text">Assign your choices to Heads or Tails, then tap the ball...</div>
+        <div id="status" class="status-text">Assign your choices, then tap the coin...</div>
         
-        <div id="magicBall" class="magic-8-ball" title="Tap to flip!">
-            <div class="blue-triangle-window">
-                <div id="answerDisplay" class="answer-text" style="font-size: 3rem; opacity: 1;">?</div>
+        <div class="coin-container" title="Tap to flip!">
+            <div id="coin" class="coin">
+                <div class="coin-face coin-front">Heads</div>
+                <div class="coin-face coin-back">Tails</div>
             </div>
         </div>
 
-        <button id="shakeBtn" class="shake-btn">Flip</button>
+        <button id="flipBtn" class="flip-btn">Flip Coin</button>
     </div>
 
     <script>
-        const outcomes = ["Heads", "Tails"];
-
-        const ball = document.getElementById('magicBall');
-        const answerDisplay = document.getElementById('answerDisplay');
+        const coin = document.getElementById('coin');
         const statusText = document.getElementById('status');
-        const shakeBtn = document.getElementById('shakeBtn');
+        const flipBtn = document.getElementById('flipBtn');
         
         let isAnimating = false;
+        let totalRotations = 0; // Keeps track of spins so the coin always spins forward instead of snapping back
 
-        function triggerShake() {
+        function triggerFlip() {
             if (isAnimating) return;
             isAnimating = true;
-            shakeBtn.disabled = true;
-            
-            answerDisplay.style.opacity = 0;
-            ball.classList.add('shake-active');
+            flipBtn.disabled = true;
             statusText.textContent = "Flipping...";
 
+            // Randomly choose outcome
+            const isHeads = Math.random() < 0.5;
+            
+            // Add 5 full base spins (1800 degrees) to ensure a dynamic, long animation
+            const baseSpins = 5;
+            let targetRotation = totalRotations + (baseSpins * 360);
+
+            // If it needs to land on tails, add an extra 180 degrees
+            if (!isHeads) {
+                targetRotation += 180;
+            } else if (targetRotation % 360 !== 0) {
+                // Ensure heads always lands perfectly on a multiple of 360
+                targetRotation += 180; 
+            }
+
+            // Apply the CSS rotation
+            coin.style.transform = `rotateY(${targetRotation}deg)`;
+            totalRotations = targetRotation;
+
+            // Wait for the 2-second CSS transition to complete
             setTimeout(() => {
-                ball.classList.remove('shake-active');
-                
-                // 50/50 Coin Flip Logic
-                const randomIndex = Math.floor(Math.random() * outcomes.length);
-                answerDisplay.textContent = outcomes[randomIndex];
-                
-                // Adjust font size for the result
-                answerDisplay.style.fontSize = "1.8rem";
-                answerDisplay.style.opacity = 1;
-                
-                statusText.textContent = "The decision is made. Ready to flip again?";
-                
-                shakeBtn.disabled = false;
+                statusText.textContent = `It's ${isHeads ? 'Heads' : 'Tails'}! Ready to flip again?`;
+                flipBtn.disabled = false;
                 isAnimating = false;
-            }, 1200); 
+            }, 2000); 
         }
 
-        shakeBtn.addEventListener('click', triggerShake);
-        ball.addEventListener('click', triggerShake);
+        flipBtn.addEventListener('click', triggerFlip);
+        coin.addEventListener('click', triggerFlip);
     </script>
 </body>
 </html>
