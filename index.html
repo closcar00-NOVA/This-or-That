@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neon Coin Flip</title>
+    <title>Lucky Coin</title>
     <style>
         /* Base Reset & Typography */
         * {
@@ -22,7 +22,6 @@
             color: #fff;
             background-color: #020005;
             overflow: hidden;
-            /* Deep violet vignette */
             background: radial-gradient(circle at center, #130024 0%, #020005 100%);
         }
 
@@ -93,7 +92,7 @@
             height: 220px;
             cursor: pointer;
             transform-style: preserve-3d;
-            transition: transform 2.5s cubic-bezier(0.175, 0.885, 0.32, 1.15); /* Snappy end rotation */
+            transition: transform 2.5s cubic-bezier(0.175, 0.885, 0.32, 1.15); 
         }
 
         .coin-face {
@@ -102,14 +101,25 @@
             height: 100%;
             border-radius: 50%;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 2.5rem;
             font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 4px;
+            letter-spacing: 2px;
             backface-visibility: hidden;
             background-color: #050505;
+        }
+
+        /* Figure and Text Adjustments */
+        .coin-face svg {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 0 10px currentColor);
+        }
+
+        .coin-face span {
+            font-size: 1.5rem;
         }
 
         /* Cyan Heads Face */
@@ -179,14 +189,26 @@
     <div class="bg-grid"></div>
 
     <div class="ui-container">
-        <h1 class="app-title">High Roller</h1>
+        <h1 class="app-title">Lucky Coin</h1>
         
         <div id="status" class="status-text">Assign Heads (Cyan) or Tails (Magenta)...</div>
         
         <div class="coin-container" title="Tap to flip!">
             <div id="coin" class="coin">
-                <div class="coin-face coin-front">Heads</div>
-                <div class="coin-face coin-back">Tails</div>
+                <div class="coin-face coin-front">
+                    <!-- Standard Head / Profile Figure -->
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                    <span>Heads</span>
+                </div>
+                <div class="coin-face coin-back">
+                    <!-- Standard Star / Tails Figure -->
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                    </svg>
+                    <span>TAILS</span>
+                </div>
             </div>
         </div>
 
